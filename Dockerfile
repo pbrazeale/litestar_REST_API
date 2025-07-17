@@ -9,4 +9,4 @@ RUN pip install --no-cache-dir --upgrade -r /app/requirements.txt
 # Expose the app port
 EXPOSE 80
 # Run app with Litestar CLI
-CMD ["litestar", "run", "--host", "0.0.0.0", "--port", "80"]
+CMD ["litestar", "run", "--host", "0.0.0.0", "--port", "80", "--reload"]
