@@ -4,7 +4,7 @@ This proejct was built with [teclado's tutorial](https://www.youtube.com/watch?v
 
 ## Software Requiremetns
 
-1. Python
+1. Python [https://www.python.org/downloads/](https://www.python.org/downloads/)
 2. Docker Desktop [https://www.docker.com/products/docker-desktop/](https://www.docker.com/products/docker-desktop/)
 
 ## LiteStar Notes
