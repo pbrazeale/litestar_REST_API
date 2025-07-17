@@ -1,7 +1,9 @@
-from litestar import Litestar, get
+class Base(DeclarativeBase):
+    pass
 
-@get("/")
-async def index() -> str:
-    return "Hello, world!"
+class ToDo(Base):
+    __tablename__ = "todo_items"
 
-app = Litestar([index])
+    id: Mapped[int] = mapped_column(primary_key=True)
+    task: Mapped[str]
+    user_id: Mapped[int]
