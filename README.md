@@ -6,6 +6,7 @@ This proejct was built with [teclado's tutorial](https://www.youtube.com/watch?v
 
 1. Python [https://www.python.org/downloads/](https://www.python.org/downloads/)
 2. Docker Desktop [https://www.docker.com/products/docker-desktop/](https://www.docker.com/products/docker-desktop/)
+    - To learn more about Docker Boot.Dev has an excellent course:[https://www.boot.dev/courses/learn-docker](https://www.boot.dev/courses/learn-docker)
 
 ## LiteStar Notes
 
