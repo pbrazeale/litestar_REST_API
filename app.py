@@ -1,12 +1,16 @@
 from advanced_alchemy.extensions.litestar.plugins.init.config.asyncio import (
     autocommit_before_send_handler,
 )
+
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+
+from litestar import Litestar, get
 from litestar.contrib.sqlalchemy.plugins import (
     SQLAlchemyAsyncConfig,
     SQLAlchemyPlugin,
 )
-from litestar import Litestar
 
 class Base(DeclarativeBase):
     pass
@@ -17,6 +21,16 @@ class ToDo(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     task: Mapped[str]
     user_id: Mapped[int]
+
+@get("/todos")
+async def get_todos(db_session: AsyncSession) -> list[ToDo]:
+    async with db_session.begin():
+        query = select(ToDo)
+        result = await db_session.execute(query)
+        return result.scalars().all()
+
+
+
 
 db_config = SQLAlchemyAsyncConfig(
     connection_string="sqlite+aiosqlite:///db.sqlite",
