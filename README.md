@@ -14,3 +14,5 @@ Runs on: http://127.0.0.1:8000
 
 Can test through: http://127.0.0.1:8000/schema/swagger
 
+## Requirements
+[Documentation](https://pypi.org/project/psycopg2/) I used `psycopg2-binary` instead of `psycopg2`.

@@ -1,5 +1,5 @@
 litestar[standard]
 litestar[sqlalchemy]
-psycopg2
-pydantic
 sqlalchemy[aiosqlite]
+psycopg2-binary
+pydantic
