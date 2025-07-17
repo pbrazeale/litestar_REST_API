@@ -1,12 +1,12 @@
 from advanced_alchemy.extension.litestar.plugins.init.config.asyncio import (
     autocommit_before_send_handler,
 )
-
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-
 from litestar.contrib.sqlalchemy.plugins import (
     SQLAlchemyAsyncConfig,
+    SQLAlchemyPlugin,
 )
+from litestar import Litestar
 
 class Base(DeclarativeBase):
     pass
@@ -24,3 +24,5 @@ db_config = SQLAlchemyAsyncConfig(
     create_all=True,
     before_send_handler=autocommit_before_send_handler,
 )
+
+app = Litestar([], plugins=[SQLAlchemyPlugin(db_config)])
