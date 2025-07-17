@@ -9,3 +9,10 @@ class ToDo(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     task: Mapped[str]
     user_id: Mapped[int]
+
+db_config = SQLAlchemyAsyncConfig(
+    connection_string="sqlite+aiosqlite:///db.sqlite",
+    metedata=Base.metedata,
+    create_all=True,
+    before_send_handler=autocommit_before_send_handler,
+)
