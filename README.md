@@ -9,9 +9,10 @@ This proejct was built with [teclado's tutorial](https://www.youtube.com/watch?v
     - To learn more about Docker Boot.Dev has an excellent course:[https://www.boot.dev/courses/learn-docker](https://www.boot.dev/courses/learn-docker)
 
 ## LiteStar Notes
-To Run:
+### To Run:
 ```bash
-litestar run
+docker build -t litestar-api .
+docker run -p 8000:80 -v "$(pwd):/app" litestar-api
 ```
 
 Runs on: http://127.0.0.1:8000
