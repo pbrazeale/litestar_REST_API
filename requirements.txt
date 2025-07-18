@@ -3,3 +3,4 @@ litestar[sqlalchemy]
 sqlalchemy[aiosqlite]
 psycopg2-binary
 pydantic
+asyncpg

@@ -1,3 +1,5 @@
+from collections.abc import AsyncGenerator
+
 from advanced_alchemy.extensions.litestar.plugins.init.config.asyncio import (
     autocommit_before_send_handler,
 )
@@ -6,7 +8,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
-from litestar import Litestar, get
+from litestar import Litestar, get, post
 from litestar.contrib.sqlalchemy.plugins import (
     SQLAlchemyAsyncConfig,
     SQLAlchemyPlugin,
@@ -22,15 +24,22 @@ class ToDo(Base):
     task: Mapped[str]
     user_id: Mapped[int]
 
-@get("/todos")
-async def get_todos(db_session: AsyncSession) -> list[ToDo]:
+# extrapolaote out post to prevent Async conflicts
+async def provide_transaction(db_session: AsyncSession) -> AsyncGenerator[AsyncSession, None]:
     async with db_session.begin():
-        query = select(ToDo)
-        result = await db_session.execute(query)
-        return result.scalars().all()
+        yield db_session
 
 
+@post("/todo")
+async def create_todo(data: ToDo, transaction: AsyncSession) -> ToDo:
+    transaction.add(data)
+    return data
 
+@get("/todos")
+async def get_todos(transaction: AsyncSession) -> list[ToDo]:
+    query = select(ToDo)
+    result = await transaction.execute(query)
+    return result.scalars().all()
 
 db_config = SQLAlchemyAsyncConfig(
     connection_string="sqlite+aiosqlite:///db.sqlite",
@@ -39,4 +48,7 @@ db_config = SQLAlchemyAsyncConfig(
     before_send_handler=autocommit_before_send_handler,
 )
 
-app = Litestar([], plugins=[SQLAlchemyPlugin(db_config)])
+app = Litestar(
+    route_handlers=[get_todos, create_todo],
+    dependencies={"transaction": provide_transaction}, 
+    plugins=[SQLAlchemyPlugin(db_config)])
