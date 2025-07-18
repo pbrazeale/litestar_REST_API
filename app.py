@@ -5,10 +5,17 @@ from advanced_alchemy.extensions.litestar.plugins.init.config.asyncio import (
 )
 
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
+from litestar.exceptions import ClientException
+from litestar.status_codes import HTTP_409_CONFLICT
 from litestar import Litestar, get, post
+from litestar.plugins.sqlalchemy import (
+    SQLAlchemyDTO, 
+    SQLAlchemyDTOConfig,
+)
 from litestar.contrib.sqlalchemy.plugins import (
     SQLAlchemyAsyncConfig,
     SQLAlchemyPlugin,
@@ -24,15 +31,28 @@ class ToDo(Base):
     task: Mapped[str]
     user_id: Mapped[int]
 
+class WriteDTO(SQLAlchemyDTO[ToDo]):
+    config = SQLAlchemyDTOConfig(exclude={"id"})
+
 # extrapolaote out post to prevent Async conflicts
-async def provide_transaction(db_session: AsyncSession) -> AsyncGenerator[AsyncSession, None]:
-    async with db_session.begin():
-        yield db_session
+async def provide_transaction(
+    db_session: AsyncSession
+) -> AsyncGenerator[AsyncSession, None]:
+    try:
+        async with db_session.begin():
+            yield db_session
+    except IntegrityError as exc:
+        raise ClientException(
+            satus_cdoe=HTTP_409_CONFLICT,
+            detail=ste(exc),
+        ) from exc
 
 
-@post("/todo")
+
+@post("/todo", dto=WriteDTO)
 async def create_todo(data: ToDo, transaction: AsyncSession) -> ToDo:
     transaction.add(data)
+    await transaction.flush()
     return data
 
 @get("/todos")
