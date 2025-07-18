@@ -1,8 +1,8 @@
 from collections.abc import AsyncGenerator
 
-from advanced_alchemy.extensions.litestar.plugins.init.config.asyncio import (
-    autocommit_before_send_handler,
-)
+# from advanced_alchemy.extensions.litestar.plugins.init.config.asyncio import (
+#     autocommit_before_send_handler,
+# )
 
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
@@ -35,16 +35,14 @@ class WriteDTO(SQLAlchemyDTO[ToDo]):
     config = SQLAlchemyDTOConfig(exclude={"id"})
 
 # extrapolaote out post to prevent Async conflicts
-async def provide_transaction(
-    db_session: AsyncSession
-) -> AsyncGenerator[AsyncSession, None]:
+async def provide_transaction(db_session: AsyncSession) -> AsyncGenerator[AsyncSession, None]:
     try:
         async with db_session.begin():
             yield db_session
     except IntegrityError as exc:
         raise ClientException(
-            satus_cdoe=HTTP_409_CONFLICT,
-            detail=ste(exc),
+            satus_code=HTTP_409_CONFLICT,
+            detail=str(exc),
         ) from exc
 
 
@@ -65,7 +63,7 @@ db_config = SQLAlchemyAsyncConfig(
     connection_string="sqlite+aiosqlite:///db.sqlite",
     metadata=Base.metadata,
     create_all=True,
-    before_send_handler=autocommit_before_send_handler,
+    # before_send_handler=autocommit_before_send_handler,
 )
 
 app = Litestar(
